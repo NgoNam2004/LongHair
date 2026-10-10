@@ -176,7 +176,7 @@ const statsCards = computed(() => {
 // Bar chart helpers
 const maxRevenue = computed(() => {
   if (!stats.value) return 1
-  return Math.max(...stats.value.revenueChart.map(d => d.revenue))
+  return Math.max(1, ...stats.value.revenueChart.map(d => d.revenue))
 })
 
 function getBarHeight(revenue) {

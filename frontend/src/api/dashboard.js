@@ -1,11 +1,9 @@
-/**
- * Dashboard API
- */
+
 import { delay } from './helpers'
 import { getMockDashboardStats } from '@/utils/mockData'
 import http from './http'
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA === 'true'
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_DASHBOARD === 'true'
 
 export const dashboardApi = {
   async getStats() {
@@ -13,6 +11,7 @@ export const dashboardApi = {
       await delay(500)
       return getMockDashboardStats()
     }
-    return http.get('/dashboard/stats')
+    const res = await http.get('/dashboard/stats')
+    return res.data // BE bọc trong { success, message, data }
   },
 }

@@ -6,22 +6,32 @@ const validate = require('../middlewares/validate.middleware');
 
 const router = express.Router();
 
-// Validations
+const PAYMENT_METHODS = ['cash', 'transfer', 'momo', 'other'];
+
+// ─── Validations ────────────────────────────────────────────────────────
 const createInvoiceValidation = [
-  body('customer').isMongoId().withMessage('Invalid customer ID'),
-  body('staff').isMongoId().withMessage('Invalid staff ID'),
+  body('customerName').trim().notEmpty().withMessage('Vui lòng nhập tên khách hàng'),
+  body('customer').optional().isMongoId().withMessage('Invalid customer ID'),
+  body('staff').optional().isMongoId().withMessage('Invalid staff ID'),
   body('services').isArray({ min: 1 }).withMessage('At least one service is required'),
-  body('services.*.service').isMongoId().withMessage('Invalid service ID in array'),
-  body('services.*.price').isNumeric().withMessage('Price must be a number'),
+  body('services.*.name').trim().notEmpty().withMessage('Vui lòng nhập tên dịch vụ'),
+  body('services.*.price').isFloat({ min: 0 }).withMessage('Price must be a number >= 0'),
+  body('services.*.quantity').optional().isInt({ min: 1 }).withMessage('Quantity must be >= 1'),
+  body('discount').optional().isFloat({ min: 0 }).withMessage('Discount must be a number >= 0'),
+  body('paymentMethod').optional().isIn(PAYMENT_METHODS),
+  body('paymentStatus').optional().isIn(['pending', 'paid']),
 ];
 
 const updateInvoiceValidation = [
-  body('services').optional().isArray(),
-  body('discount').optional().isNumeric(),
-  body('paymentMethod').optional().isIn(['cash', 'banking', 'momo', 'other']),
+  body('services').optional().isArray({ min: 1 }),
+  body('services.*.name').optional().trim().notEmpty(),
+  body('services.*.price').optional().isFloat({ min: 0 }),
+  body('services.*.quantity').optional().isInt({ min: 1 }),
+  body('discount').optional().isFloat({ min: 0 }),
+  body('paymentMethod').optional().isIn(PAYMENT_METHODS),
 ];
 
-// All routes are protected
+// ─── Routes (tất cả cần đăng nhập) ──────────────────────────────────────
 router.use(protect);
 
 router.post('/', validate(createInvoiceValidation), invoiceController.createInvoice);

@@ -49,7 +49,7 @@ router.post('/login', validate([
   }
 
   const token = generateToken(user._id, user.role);
-  return successResponse(res, 200, 'Login successful', { token, user: { id: user._id, username: user.username, role: user.role } });
+  return successResponse(res, 200, 'Login successful', { token, user: { id: user._id, username: user.username, name: user.name, email: user.email, role: user.role, avatar: user.avatar } });
 }));
 
 router.get('/me', protect, asyncHandler(async (req, res) => {
